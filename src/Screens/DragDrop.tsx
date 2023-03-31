@@ -1,15 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
+import { View } from "react-native";
 
 import Animated, {
-  useAnimatedGestureHandler,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming
+  withTiming,
+  runOnJS
 } from "react-native-reanimated";
 import {
-  LongPressGestureHandler,
-  PanGestureHandler,
   GestureHandlerRootView,
   GestureDetector,
   Gesture
@@ -17,15 +16,9 @@ import {
 
 import { Box, Text } from "@app/Components";
 import { Colors, Corners, Grid, Sizes } from "@app/theme";
+import { useMeasure, usePlaySound, getDistance } from "@app/Utils";
 
 const items = ["por", "para"];
-
-const getDistance = (ax, ay, bx, by) => {
-  "worklet";
-  const dx = bx - ax;
-  const dy = by - ay;
-  return Math.sqrt(dx * dx + dy * dy);
-};
 
 const Draggable = ({
   text,
@@ -44,6 +37,8 @@ const Draggable = ({
   const scale = useSharedValue(1);
   const context = useSharedValue({ x: 0, y: 0 });
 
+  const { playSound } = usePlaySound();
+
   const panGesture = Gesture.Pan()
     .onStart((event) => {
       zIndex.value = 1;
@@ -52,12 +47,8 @@ const Draggable = ({
     .onUpdate((event) => {
       translateX.value = event.translationX + context.value.x;
       translateY.value = event.translationY + context.value.y;
-
-      const middleX = translateX.value + x;
-
-      // console.log(translateX.value - event.x);
     })
-    .onEnd((event) => {
+    .onEnd(async (event) => {
       zIndex.value = 0;
 
       const absoluteX = translateX.value + x;
@@ -71,17 +62,18 @@ const Draggable = ({
       );
 
       if (distance < 100) {
-        translateX.value = withSpring(dropArea.value.x - x, { stiffness: 100 });
-        translateY.value = withSpring(dropArea.value.y - y, { stiffness: 100 });
+        translateX.value = withSpring(dropArea.value.x - x, { mass: 0.3 });
+        translateY.value = withSpring(dropArea.value.y - y, { mass: 0.3 });
+        runOnJS(playSound)({ delay: distance });
       }
 
-      if (absoluteX > dropArea.value.x) {
-        console.log("left edge");
-      }
+      // if (absoluteX > dropArea.value.x) {
+      //   console.log("left edge");
+      // }
 
-      if (absoluteY > dropArea.value.y) {
-        console.log("top edge");
-      }
+      // if (absoluteY > dropArea.value.y) {
+      //   console.log("top edge");
+      // }
     });
 
   const pressGesture = Gesture.LongPress()
@@ -147,11 +139,51 @@ const Draggable = ({
 };
 
 const DragDrop = (): JSX.Element => {
-  const dropArea = useSharedValue({ x: 150, y: 300, width: 100, height: 40 });
+  const { myRef, onLayout, size } = useMeasure();
+
+  const dropArea = useSharedValue({
+    x: 0,
+    y: 300,
+    width: 100,
+    height: 40
+  });
+
+  useEffect(() => {
+    if (!size) return;
+    dropArea.value = {
+      x: size.px,
+      y: size.py,
+      width: size.width,
+      height: size.height
+    };
+  }, size);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Box flex={1} backgroundColor={Colors.gray100}>
+        <Box
+          position="absolute"
+          bottom={200}
+          width="100%"
+          flexDirection="row"
+          alignItems="center"
+          flexWrap="wrap"
+          justifyContent="center"
+        >
+          <Text fontSize={22}>Compré los huevos </Text>
+          <View
+            style={{
+              width: dropArea.value.width,
+              height: dropArea.value.height,
+              backgroundColor: "white",
+              borderRadius: Corners.regular,
+              zIndex: -1
+            }}
+            ref={myRef}
+            onLayout={onLayout}
+          />
+          <Text fontSize={22}>el desayuno.</Text>
+        </Box>
         <Box flexDirection="row">
           {items.map((item, i) => (
             <Draggable
@@ -163,16 +195,6 @@ const DragDrop = (): JSX.Element => {
             />
           ))}
         </Box>
-        <Box
-          position="absolute"
-          top={dropArea.value.y}
-          left={dropArea.value.x}
-          width={dropArea.value.width}
-          height={dropArea.value.height}
-          backgroundColor="white"
-          borderRadius={Corners.regular}
-          zIndex={-1}
-        />
       </Box>
     </GestureHandlerRootView>
   );
