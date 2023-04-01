@@ -24,20 +24,29 @@ const Draggable = ({
   text,
   x,
   y,
-  dropArea
+  dropArea,
+  setSelected
 }: {
   text: string;
   x: number;
   y: number;
   dropArea: any;
+  setSelected: any;
+  // setSelected: React.SetStateAction<string>;
 }): JSX.Element => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const zIndex = useSharedValue(0);
-  const scale = useSharedValue(1);
   const context = useSharedValue({ x: 0, y: 0 });
 
   const { playSound } = usePlaySound();
+
+  const snapTo = ({ x, y }) => {
+    "worklet";
+    translateX.value = withSpring(x, { mass: 0.3 });
+    translateY.value = withSpring(y, { mass: 0.3 });
+    runOnJS(playSound)({ delay: 50 });
+  };
 
   const panGesture = Gesture.Pan()
     .onStart((event) => {
@@ -62,9 +71,10 @@ const Draggable = ({
       );
 
       if (distance < 100) {
-        translateX.value = withSpring(dropArea.value.x - x, { mass: 0.3 });
-        translateY.value = withSpring(dropArea.value.y - y, { mass: 0.3 });
-        runOnJS(playSound)({ delay: distance });
+        snapTo({ x: dropArea.value.x - x, y: dropArea.value.y - y });
+        runOnJS(setSelected)(text);
+      } else {
+        runOnJS(setSelected)(false);
       }
 
       // if (absoluteX > dropArea.value.x) {
@@ -76,14 +86,6 @@ const Draggable = ({
       // }
     });
 
-  const pressGesture = Gesture.LongPress()
-    .onStart((event) => {
-      scale.value = 1.2;
-    })
-    .onEnd((event) => {
-      scale.value = 1;
-    });
-
   const style = useAnimatedStyle(() => {
     return {
       transform: [
@@ -92,28 +94,14 @@ const Draggable = ({
         },
         {
           translateY: translateY.value
-        },
-        { scale: withTiming(scale.value, { duration: 200 }) }
+        }
       ],
       zIndex: zIndex.value
     };
   });
 
-  const leftStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: translateX.value
-        },
-        {
-          translateY: translateY.value
-        }
-      ]
-    };
-  });
-
   return (
-    <GestureDetector gesture={Gesture.Simultaneous(panGesture, pressGesture)}>
+    <GestureDetector gesture={panGesture}>
       <Animated.View>
         <Animated.View style={style}>
           <Box
@@ -140,6 +128,7 @@ const Draggable = ({
 
 const DragDrop = (): JSX.Element => {
   const { myRef, onLayout, size } = useMeasure();
+  const [selected, setSelected] = useState();
 
   const dropArea = useSharedValue({
     x: 0,
@@ -156,11 +145,15 @@ const DragDrop = (): JSX.Element => {
       width: size.width,
       height: size.height
     };
-  }, size);
+  }, [size]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Box flex={1} backgroundColor={Colors.gray100}>
+        <Box position="absolute" top={100}>
+          <Text>{selected}</Text>
+        </Box>
+
         <Box
           position="absolute"
           bottom={200}
@@ -190,8 +183,9 @@ const DragDrop = (): JSX.Element => {
               key={item}
               text={item}
               dropArea={dropArea}
-              x={i * 100}
-              y={i * 100 + 100}
+              x={i * 120}
+              y={300}
+              setSelected={setSelected}
             />
           ))}
         </Box>
