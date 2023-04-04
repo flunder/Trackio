@@ -45,7 +45,7 @@ const Draggable = ({ text }: { text: string }): JSX.Element => {
     onEnd: (event, context) => {
       zIndex.value = 0;
       // scale.value = 1;
-      console.log(event);
+      // console.log(event);
       // if (event.absoluteY > 150) {
       // translateX.value = withSpring(0);
       // translateY.value = withSpring(0);

@@ -4,64 +4,43 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet, View } from "react-native";
 
 import { Box, Text } from "@app/Components";
-import { Colors, Corners } from "@app/theme";
+import { Colors } from "@app/theme";
 import { Draggable } from "./Draggable";
 import { Question } from "./Question";
-
-const items = ["por", "para"];
-
-const data = [
-  {
-    id: 1,
-    parts: [
-      {
-        type: "text",
-        text: "Compré los huevos"
-      },
-      {
-        type: "answer",
-        text: "por"
-      },
-      {
-        type: "text",
-        text: "el desayuno."
-      },
-      {
-        type: "text",
-        text: "Y fui a la calle"
-      },
-      {
-        type: "answer",
-        text: "por"
-      },
-      {
-        type: "text",
-        text: "la noche."
-      }
-    ]
-  }
-];
+import { data } from "./data";
 
 const DragDrop = (): JSX.Element => {
-  const [selected, setSelected] = useState();
-  const dropArea = useSharedValue({ x: 0, y: 0 });
+  const [selected, setSelected] = useState<string[]>([]);
+  const dropAreas = useRef([
+    useSharedValue({ x: 0, y: 0 }),
+    useSharedValue({ x: 0, y: 0 })
+  ]).current;
+
+  const question = data[0];
+  const answers = question.parts
+    .filter((i) => i.type === "answer")
+    .map((i) => i.text);
+
+  console.log(answers);
 
   return (
     <GestureHandlerRootView style={styles.wrap}>
       <Box position="absolute" top={100}>
-        <Text>{selected}</Text>
+        {selected.map((text, i) => (
+          <Text key={i}>{text}</Text>
+        ))}
       </Box>
 
-      <Question dropArea={dropArea} data={data[0]} />
+      <Question dropAreas={dropAreas} data={question} />
 
-      {items.map((item, i) => (
+      {answers.map((item, i) => (
         <Draggable
           key={item}
           text={item}
-          dropArea={dropArea}
           x={i * 120}
           y={300}
           setSelected={setSelected}
+          dropAreas={dropAreas}
         />
       ))}
     </GestureHandlerRootView>

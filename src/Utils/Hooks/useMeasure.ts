@@ -11,16 +11,11 @@ export const useMeasure = () => {
     py: number;
   }>();
 
-  const measure = () => {
+  const onLayout = () => {
     if (!myRef.current) return;
-
     myRef.current.measure((a, b, width, height, px, py) => {
       setSize({ a, b, width, height, px, py });
     });
-  };
-
-  const onLayout = () => {
-    measure();
   };
 
   return {

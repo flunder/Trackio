@@ -1,23 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
-import { View } from "react-native";
+import React from "react";
 import { Box, Text } from "@app/Components";
-import { Corners, Colors, Grid, Sizes } from "@app/theme";
-import { useMeasure } from "@app/Utils";
+import { Question as QuestionType, DropArea as DropAreaType } from "@app/types";
+import { DropArea } from "./DropArea";
 
-const Question = ({ dropArea, data }): JSX.Element => {
-  const { myRef, onLayout, size } = useMeasure();
-  const { id, parts } = data;
+interface Props {
+  dropAreas: DropAreaType[];
+  data: QuestionType;
+}
 
-  useEffect(() => {
-    if (!size) return;
-
-    dropArea.value = {
-      x: size.px,
-      y: size.py,
-      width: size.width,
-      height: size.height
-    };
-  }, [size]);
+const Question = ({ dropAreas, data: { parts } }: Props): JSX.Element => {
+  let answerIndex: number = 0;
 
   return (
     <Box
@@ -30,7 +22,7 @@ const Question = ({ dropArea, data }): JSX.Element => {
       justifyContent="center"
       padding={20}
     >
-      {parts.map(({ type, text }, index) => {
+      {parts.map(({ type, text, isAdditional }, index) => {
         if (type === "text") {
           return (
             <Text key={index} fontSize={22}>
@@ -39,22 +31,8 @@ const Question = ({ dropArea, data }): JSX.Element => {
           );
         }
         if (type === "answer") {
-          return (
-            <View
-              key={index}
-              style={{
-                width: 70,
-                height: 30,
-                backgroundColor: "white",
-                borderRadius: Corners.regular,
-                zIndex: -1,
-                marginVertical: 5,
-                marginHorizontal: 8
-              }}
-              ref={myRef}
-              onLayout={onLayout}
-            />
-          );
+          if (isAdditional) return;
+          return <DropArea key={index} dropArea={dropAreas[answerIndex++]} />;
         }
       })}
     </Box>

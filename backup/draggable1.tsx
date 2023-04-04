@@ -41,7 +41,7 @@ const Draggable = ({
 
   const setSelectedWrapper = (index, value) => {
     setSelected((state) => {
-      const newState = [...state];
+      const newState = state;
       newState[index] = value;
       return newState;
     });
@@ -62,15 +62,14 @@ const Draggable = ({
           )
         };
       })
-      .filter((item) => item.distance < 75)
-      .sort((a, b) => a.distance - b.distance)?.[0];
+      .sort((a, b) => a.distance - b.distance)
+      .filter((item) => item.distance < 100)?.[0];
   };
 
   const panGesture = Gesture.Pan()
     .onStart((event) => {
       zIndex.value = 1;
       context.value = { x: translateX.value, y: translateY.value };
-      // runOnJS(setSelectedWrapper)(closestArea.index, text);
     })
     .onUpdate((event) => {
       translateX.value = event.translationX + context.value.x;
@@ -81,6 +80,7 @@ const Draggable = ({
 
       const absoluteX = translateX.value + x;
       const absoluteY = translateY.value + y;
+
       const closestArea = getClosestDropArea(absoluteX, absoluteY);
 
       if (typeof closestArea !== "undefined") {
@@ -90,6 +90,39 @@ const Draggable = ({
         });
         runOnJS(setSelectedWrapper)(closestArea.index, text);
       }
+
+      // if (distance < 100) {
+      //   snapTo({ x: dropArea.value.x - x, y: dropArea.value.y - y });
+      //   runOnJS(setSelected)(text);
+      // } else {
+      //   runOnJS(setSelected)(false);
+      // }
+
+      // Prev
+
+      // const distance = getDistance(
+      //   absoluteX,
+      //   absoluteY,
+      //   dropArea.value.x,
+      //   dropArea.value.y
+      // );
+
+      // console.log(dropAreas);
+
+      // if (distance < 100) {
+      //   snapTo({ x: dropArea.value.x - x, y: dropArea.value.y - y });
+      //   runOnJS(setSelected)(text);
+      // } else {
+      //   runOnJS(setSelected)(false);
+      // }
+
+      // if (absoluteX > dropArea.value.x) {
+      //   console.log("left edge");
+      // }
+
+      // if (absoluteY > dropArea.value.y) {
+      //   console.log("top edge");
+      // }
     });
 
   const style = useAnimatedStyle(() => {
