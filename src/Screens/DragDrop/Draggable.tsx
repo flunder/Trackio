@@ -12,12 +12,14 @@ import { usePlaySound, getDistance } from "@app/Utils";
 import { DropArea as DropAreaType } from "@app/types";
 
 const Draggable = ({
+  id,
   text,
   x,
   y,
   dropAreas,
   setSelected
 }: {
+  id: number;
   text: string;
   x: number;
   y: number;
@@ -83,11 +85,12 @@ const Draggable = ({
       const absoluteY = translateY.value + y;
       const closestArea = getClosestDropArea(absoluteX, absoluteY);
 
-      if (typeof closestArea !== "undefined") {
+      if (!isNaN(closestArea?.index)) {
         snapTo({
           x: dropAreas[closestArea.index].value.x - x,
           y: dropAreas[closestArea.index].value.y - y
         });
+        dropAreas[closestArea.index].value.holds = 5;
         runOnJS(setSelectedWrapper)(closestArea.index, text);
       }
     });

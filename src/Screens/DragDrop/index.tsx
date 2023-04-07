@@ -12,8 +12,8 @@ import { data } from "./data";
 const DragDrop = (): JSX.Element => {
   const [selected, setSelected] = useState<string[]>([]);
   const dropAreas = useRef([
-    useSharedValue({ x: 0, y: 0 }),
-    useSharedValue({ x: 0, y: 0 })
+    useSharedValue({ x: 0, y: 0, holds: 0 }),
+    useSharedValue({ x: 0, y: 0, holds: 0 })
   ]).current;
 
   const question = data[0];
@@ -21,7 +21,7 @@ const DragDrop = (): JSX.Element => {
     .filter((i) => i.type === "answer")
     .map((i) => i.text);
 
-  console.log(answers);
+  console.log(dropAreas);
 
   return (
     <GestureHandlerRootView style={styles.wrap}>
@@ -37,6 +37,7 @@ const DragDrop = (): JSX.Element => {
         <Draggable
           key={item}
           text={item}
+          id={i}
           x={i * 120}
           y={300}
           setSelected={setSelected}

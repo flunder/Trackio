@@ -4,7 +4,7 @@ export const Colors = {
   // Base
   primary: "#0686FC",
   black: "#1E1E1E",
-  white: "#DEE8F1",
+  white: "#FFFFFF",
 
   // Accents
   banana: "#F8FE83",
@@ -22,7 +22,7 @@ export const Colors = {
   warning: "#3434FF",
 
   // Custom Grays
-  gray100: "#CFDBE5", // bright
+  gray100: "#D9E7EF", // bright was cfdbe5
   gray200: "#A4B9CB",
   gray300: "#7E99B2",
   gray400: "#5D7C98",
@@ -63,4 +63,9 @@ export const Shadow = {
     shadowRadius: 5,
     elevation: 5
   }
+};
+
+export const Fonts = {
+  Regular: "Outfit_400Regular",
+  Bold: "Outfit_700Bold"
 };
