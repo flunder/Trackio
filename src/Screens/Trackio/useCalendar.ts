@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export const generateCalendar = (month, year) => {
   const calendar = [];
@@ -30,17 +30,5 @@ export const useCalendar = (month, year) => {
     setCalendar(calendar);
   }, []);
 
-  const isExtraDays = useRef((week, date) => {
-    if (week === 0 && date > 10) {
-      return true;
-    } else if (week === 5 && date < 10) {
-      return true;
-    } else if (week === 4 && date < 10) {
-      return true;
-    } else {
-      return false;
-    }
-  }).current;
-
-  return { calendar, isExtraDays };
+  return { calendar };
 };

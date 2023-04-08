@@ -1,12 +1,14 @@
-import React, { SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Box, Touchable } from "@app/Components";
 import { Colors } from "@app/theme";
 import { CalendarDay, CalendarWeek } from "@app/Components/Icons";
 
 const Navigation = ({
+  selectedPage,
   setSelectedPage
 }: {
-  setSelectedPage: SetStateAction<"month" | "day">;
+  selectedPage: string;
+  setSelectedPage: Dispatch<SetStateAction<"month" | "day">>;
 }): JSX.Element => {
   return (
     <Box flexDirection="row" height={100} backgroundColor={Colors.white}>
@@ -21,7 +23,7 @@ const Navigation = ({
           setSelectedPage("month");
         }}
       >
-        <CalendarWeek />
+        <CalendarWeek opacity={selectedPage === "month" ? 1 : 0.3} />
       </Touchable>
       <Touchable
         flex={1}
@@ -32,7 +34,7 @@ const Navigation = ({
           setSelectedPage("day");
         }}
       >
-        <CalendarDay />
+        <CalendarDay opacity={selectedPage === "day" ? 1 : 0.3} />
       </Touchable>
     </Box>
   );
