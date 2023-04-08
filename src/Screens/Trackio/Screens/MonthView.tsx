@@ -5,10 +5,10 @@ import { viewPort } from "@app/Utils";
 import { Box, Text } from "@app/Components";
 import { Colors, Fonts, Sizes } from "@app/theme";
 
-import { Cell } from "./Cell";
-import { Calendar } from "./Calendar";
-import { useMonthsToShow } from "./useMonthsToShow";
-import { titleHeight, monthHeight, months, weekdays } from "./const";
+import { Cell } from "../Components/Cell";
+import { Calendar } from "../Components/Calendar";
+import { useMonthsToShow } from "../Hooks/useMonthsToShow";
+import { titleHeight, monthHeight, months, weekdays } from "../const";
 
 const MonthView = (): JSX.Element => {
   const offsetY = useRef(new Animated.Value(0)).current;
@@ -63,30 +63,38 @@ const MonthView = (): JSX.Element => {
 
   return (
     <Box flex={1}>
-      <Box height={monthHeight} paddingTop={viewPort.statusBar + 20}>
-        <Title />
-        <Weekdays />
+      <Box
+        height={monthHeight}
+        paddingTop={viewPort.statusBar + 20}
+        backgroundColor="white"
+      >
         {isLoading && <ActivityIndicator />}
-        <Animated.FlatList
-          data={monthsData}
-          keyExtractor={({ month, year }) => `${month}${year}`}
-          renderItem={renderItem}
-          snapToInterval={monthHeight}
-          decelerationRate="fast"
-          showsHorizontalScrollIndicator={false}
-          scrollEventThrottle={16}
-          bounces={false}
-          initialScrollIndex={monthsData.length - 1}
-          getItemLayout={(data, index) => ({
-            length: monthHeight,
-            offset: monthHeight * index,
-            index
-          })}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: offsetY } } }],
-            { useNativeDriver: true }
-          )}
-        />
+        {!isLoading && (
+          <>
+            <Title />
+            <Weekdays />
+            <Animated.FlatList
+              data={monthsData}
+              keyExtractor={({ month, year }) => `${month}${year}`}
+              renderItem={renderItem}
+              snapToInterval={monthHeight}
+              decelerationRate="fast"
+              showsHorizontalScrollIndicator={false}
+              scrollEventThrottle={16}
+              bounces={false}
+              initialScrollIndex={monthsData.length - 1}
+              getItemLayout={(data, index) => ({
+                length: monthHeight,
+                offset: monthHeight * index,
+                index
+              })}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: offsetY } } }],
+                { useNativeDriver: true }
+              )}
+            />
+          </>
+        )}
       </Box>
     </Box>
   );

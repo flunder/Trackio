@@ -17,3 +17,5 @@ export const months = [
 
 export const monthHeight = 450;
 export const titleHeight = 36;
+
+export const navigationHeight = 100;

@@ -2,7 +2,7 @@ import moment, { Moment } from "moment";
 import React, { useState, useRef } from "react";
 import { Box } from "@app/Components";
 import { Cell } from "./Cell";
-import { monthHeight } from "./const";
+import { monthHeight } from "../const";
 
 const Calendar = ({ month, year, calendar }): JSX.Element => {
   const today = moment().format("YYYY-MM-DD");

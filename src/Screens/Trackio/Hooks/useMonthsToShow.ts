@@ -13,7 +13,17 @@ export const useMonthsToShow = (): {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const monthsData = [...Array(monthsToShow)].map((_, i) => {
+    triggerGenerate();
+  }, []);
+
+  const triggerGenerate = async () => {
+    const monthsData = await generate();
+    setMonths(monthsData);
+    setIsLoading(false);
+  };
+
+  const generate = async (): Promise<Months> => {
+    return [...Array(monthsToShow)].map((_, i) => {
       const newDate = moment().subtract(monthsToShow - (i + 1), "months");
       const month = parseInt(newDate.format("M"));
       const year = parseInt(newDate.format("yyyy"));
@@ -25,10 +35,7 @@ export const useMonthsToShow = (): {
         calendar
       };
     });
-
-    setMonths(monthsData);
-    setIsLoading(false);
-  }, []);
+  };
 
   return {
     monthsData: months,
