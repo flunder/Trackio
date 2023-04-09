@@ -15,6 +15,12 @@ import Svg, {
 } from "react-native-svg";
 import { randomNumberBetween } from "@app/Utils";
 
+const amounts = {
+  full: 0,
+  half: 120,
+  empty: 220
+};
+
 interface Props extends ViewStyle {
   scale?: number;
   color: string;
@@ -29,7 +35,7 @@ const Potion = ({
 }: Props): JSX.Element => {
   const style = pickViewStyleProps(props);
   const AnimatedFill = Animated.createAnimatedComponent(G);
-  const fillAmount = useRef(new Animated.Value(0)).current;
+  const fillAmount = useRef(new Animated.Value(amounts.empty)).current;
 
   const animateTo = (amount: number) => {
     Animated.timing(fillAmount, {
@@ -46,7 +52,6 @@ const Potion = ({
         height={370 * scale}
         viewBox="0 0 112 370"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
         <Path fill="#F2DFDF" d="M30 18H82V56H30z" />
@@ -146,6 +151,18 @@ const Potion = ({
           stroke="#F2DFDF"
           strokeWidth={5.30769}
         />
+      </Svg>
+
+      <Bubbles fillAmount={fillAmount} />
+
+      <Svg
+        width={112 * scale}
+        height={370 * scale}
+        viewBox="0 0 112 370"
+        fill="none"
+        {...props}
+        style={{ position: "absolute" }}
+      >
         <Path
           opacity={0.2}
           d="M66.97 31.137a4.745 4.745 0 015.426-3.947l.12.018a2.252 2.252 0 011.873 2.576l-3.1 19.636a4.894 4.894 0 01-5.597 4.07 2.224 2.224 0 01-1.85-2.544l3.127-19.81z"
@@ -198,23 +215,21 @@ const Potion = ({
         </Defs>
       </Svg>
 
-      <Bubbles />
-
       <Box position="absolute" height="100%" opacity={0.5}>
         <Touchable
           flex={1}
-          onPress={() => animateTo(0)}
+          onPress={() => animateTo(amounts.full)}
           width={44}
           paddingTop={20}
         ></Touchable>
         <Touchable
           flex={1}
-          onPress={() => animateTo(120)}
+          onPress={() => animateTo(amounts.half)}
           width={44}
         ></Touchable>
         <Touchable
           flex={1}
-          onPress={() => animateTo(220)}
+          onPress={() => animateTo(amounts.empty)}
           width={44}
         ></Touchable>
       </Box>
@@ -237,7 +252,7 @@ const Bubble = ({
   const startBubbling = () => {
     Animated.timing(offsetY, {
       delay: delay,
-      toValue: 0,
+      toValue: -10,
       duration: speed * 5000,
       useNativeDriver: true
     }).start(() => {
@@ -245,8 +260,6 @@ const Bubble = ({
       startBubbling();
     });
   };
-
-  console.log(scale);
 
   return (
     <Box
@@ -283,19 +296,43 @@ const Bubble = ({
   );
 };
 
-const Bubbles = () => {
+const Bubbles = ({ fillAmount }) => {
+  const height = fillAmount.interpolate({
+    inputRange: [0, 220],
+    outputRange: [100, 20]
+  });
+
   const refs = [...Array(10)].map(
     (_, i) =>
       useRef({
-        scale: randomNumberBetween(0, 20) / 10,
+        id: i,
+        scale: randomNumberBetween(0, 20) / 20,
         speed: Math.random() + 1,
-        offsetX: Math.random() * 40,
+        offsetX: Math.random() * 25 + 5,
         offsetY: new Animated.Value(160),
-        delay: Math.random() * 2000
+        delay: Math.random() * 5000
       }).current
   );
 
-  return refs.map((b) => <Bubble {...b} />);
+  return (
+    <Box
+      bottom={3}
+      left={2}
+      width={40}
+      height={height}
+      position="absolute"
+      borderTopLeftRadius={5}
+      borderTopRightRadius={5}
+      borderBottomLeftRadius={100}
+      borderBottomRightRadius={100}
+      overflow="hidden"
+      as={Animated.View}
+    >
+      {refs.map((b) => (
+        <Bubble key={b.id} {...b} />
+      ))}
+    </Box>
+  );
 };
 
 export { Potion };
