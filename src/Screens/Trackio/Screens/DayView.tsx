@@ -1,19 +1,33 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Animated, FlatList, ScrollView } from "react-native";
+import { Animated, FlatList } from "react-native";
 import { Box, Text } from "@app/Components";
-import { Colors, Fonts, Grid, Sizes } from "@app/theme";
+import { Sizes } from "@app/theme";
 import { viewPort } from "@app/Utils";
-import { navigationHeight } from "../const";
 import { DayViewScrollView } from "../Components/DayViewScrollView";
+import { write, read, erase } from "@app/Utils/localStorage";
+import { ASYNC_STORAGE_KEYS } from "../const";
 
 const DayView = (): JSX.Element => {
   const scrollViewY = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
-    console.log(viewableItems);
+  const backgroundColorRaw = useRef(new Animated.Value(0)).current;
+  const backgroundColor = useRef(
+    backgroundColorRaw.interpolate({
+      inputRange: [0, 1],
+      outputRange: ["green", "red"]
+    })
+  ).current;
+
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems?.[0]) setActiveIndex(viewableItems[0].index);
   }).current;
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {};
 
   const renderItem = ({ item, index }) => {
     return (
@@ -33,7 +47,7 @@ const DayView = (): JSX.Element => {
   };
 
   return (
-    <Box flex={1}>
+    <Box flex={1} as={Animated.View} backgroundColor={backgroundColor}>
       <Box
         flexDirection="row"
         top={525}
@@ -57,8 +71,6 @@ const DayView = (): JSX.Element => {
         snapToInterval={viewPort.width}
         decelerationRate="fast"
         showsHorizontalScrollIndicator={false}
-        // bounces={false}
-        // scrollEnabled={false}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 75 }}
       />

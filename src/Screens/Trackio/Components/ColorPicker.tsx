@@ -4,9 +4,6 @@ import { Colors, Corners, Grid, Sizes } from "@app/theme";
 import { viewPort } from "@app/Utils";
 import { navigationHeight } from "../const";
 import { Potion } from "./Potion";
-import { ASYNC_STORAGE_KEYS } from "../const";
-
-const { COLOR_DATA } = ASYNC_STORAGE_KEYS;
 
 interface Props {
   onChange: (index: number, color: "string") => void;
@@ -18,7 +15,6 @@ const ColorPicker = ({ onChange, ...props }: Props): JSX.Element => {
       height={200}
       alignItems="center"
       width={viewPort.width}
-      // paddingHorizontal={Grid.gutter_width}
       marginBottom={navigationHeight}
     >
       <Box
@@ -37,7 +33,7 @@ const ColorPicker = ({ onChange, ...props }: Props): JSX.Element => {
           color="#FF5325"
           topColor="#FFA188"
           onChange={onChange}
-          index={1}
+          index={0}
         />
         <Potion
           scale={0.4}
@@ -45,7 +41,7 @@ const ColorPicker = ({ onChange, ...props }: Props): JSX.Element => {
           color="#8E5137"
           topColor="#B58B78"
           onChange={onChange}
-          index={2}
+          index={1}
         />
         <Potion
           scale={0.4}
@@ -53,7 +49,7 @@ const ColorPicker = ({ onChange, ...props }: Props): JSX.Element => {
           color="green"
           topColor="cyan"
           onChange={onChange}
-          index={3}
+          index={2}
         />
       </Box>
     </Box>

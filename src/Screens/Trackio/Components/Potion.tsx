@@ -41,7 +41,7 @@ const Potion = ({
   const fillAmount = useRef(new Animated.Value(amounts.empty)).current;
 
   const animateTo = (amount: number) => {
-    onChange(index, "red");
+    onChange(index, color);
     Animated.timing(fillAmount, {
       toValue: amount,
       duration: 500,

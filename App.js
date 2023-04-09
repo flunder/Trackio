@@ -3,10 +3,13 @@ import { Audio } from "expo-av";
 import { LogBox } from 'react-native';
 import { setCustomText } from 'react-native-global-props'
 import { useFonts, Outfit_400Regular, Outfit_700Bold } from '@expo-google-fonts/outfit';
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
 
 import { DragDrop } from '@app/Screens/DragDrop';
 import { PlaySound } from '@app/Screens/PlaySound';
 import { Trackio } from '@app/Screens/Trackio';
+
+const queryClient = new QueryClient()
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Outfit_400Regular, Outfit_700Bold });
@@ -40,6 +43,11 @@ export default function App() {
     if (fontsLoaded) setDefaultFont();
   }, [fontsLoaded])
 
+  if (!fontsLoaded) return null;
 
-  return fontsLoaded ? <Trackio /> : null;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Trackio />
+    </QueryClientProvider>
+  )
 }

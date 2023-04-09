@@ -1,10 +1,19 @@
 import moment, { Moment } from "moment";
 import React, { useState, useRef } from "react";
+import { ActivityIndicator } from "react-native";
+
 import { Box } from "@app/Components";
 import { Cell } from "./Cell";
 import { monthHeight } from "../const";
+import { useDaysByColors } from "../queries";
+import { mergeColors } from "../Utils/";
+
+const padInt = (num, count) => {
+  return [Math.pow(10, count - num.toString().length), num].join("").substr(1);
+};
 
 const Calendar = ({ month, year, calendar }): JSX.Element => {
+  const { data, isLoading } = useDaysByColors();
   const today = moment().format("YYYY-MM-DD");
   const [selectedDate, setSelectedDate] = useState<Moment>();
 
@@ -19,6 +28,9 @@ const Calendar = ({ month, year, calendar }): JSX.Element => {
       return false;
     }
   }).current;
+
+  if (isLoading) return <ActivityIndicator />;
+  // console.log(data);
 
   return (
     <Box height={monthHeight} alignItems="center">
@@ -35,6 +47,9 @@ const Calendar = ({ month, year, calendar }): JSX.Element => {
               : isSame
               ? "isSame"
               : "isAfter";
+            const key = [year, padInt(month + 1, 2), day].join("-");
+            const colors = data?.[key];
+            const color = mergeColors(colors);
 
             return (
               <Box key={day} flexDirection="column">
@@ -46,6 +61,7 @@ const Calendar = ({ month, year, calendar }): JSX.Element => {
                     variant={variant}
                     onPress={onPress}
                     isSelected={isSelected}
+                    dayColor={color}
                   />
                 )}
               </Box>

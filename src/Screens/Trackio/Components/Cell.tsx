@@ -15,9 +15,17 @@ interface CellProps extends ViewStyle, TextStyle {
   onPress?: () => void;
   isSelected?: boolean;
   variant?: "isBefore" | "isSame" | "isAfter";
+  dayColor?: string;
 }
 
-const Cell = ({ text, onPress, variant, isSelected, ...props }: CellProps) => {
+const Cell = ({
+  text,
+  onPress,
+  variant,
+  isSelected,
+  dayColor,
+  ...props
+}: CellProps) => {
   const boxStyle = pickViewStyleProps(props);
   const textStyle = pickTextStyleProps(props);
 
@@ -45,6 +53,16 @@ const Cell = ({ text, onPress, variant, isSelected, ...props }: CellProps) => {
       onPress={onPress}
       {...boxStyle}
     >
+      {dayColor && (
+        <Box
+          position="absolute"
+          width="80%"
+          height="80%"
+          borderRadius={9999}
+          backgroundColor={dayColor}
+          borderWidth={1}
+        />
+      )}
       {isSelected && (
         <Box
           position="absolute"
