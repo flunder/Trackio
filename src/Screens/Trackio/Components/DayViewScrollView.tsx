@@ -4,16 +4,32 @@ import { Box, Text } from "@app/Components";
 import { Colors, Fonts, Grid, Sizes } from "@app/theme";
 import { viewPort } from "@app/Utils";
 import { navigationHeight } from "../const";
+import { ColorPicker } from "./";
 
 interface Props {
   item: string | number;
   scrollViewY: Animated.Value;
+  isActive: boolean;
 }
 
 const DayViewScrollView = ({
   item: dayItem,
-  scrollViewY
+  scrollViewY,
+  isActive
 }: Props): JSX.Element => {
+  const translateY = useRef(
+    scrollViewY.interpolate({
+      inputRange: [0, 220],
+      outputRange: [0, -220],
+      extrapolate: "clamp"
+    })
+  ).current;
+
+  // const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
+  //   console.log(viewableItems);
+  //   alert("x");
+  // }).current;
+
   const renderItem = ({ item }) => {
     return item === 0 ? (
       <Box height={viewPort.height - navigationHeight}>
@@ -24,8 +40,13 @@ const DayViewScrollView = ({
         </Box>
       </Box>
     ) : (
-      // <ColorPicker />
-      <Box />
+      <Box
+        as={Animated.View}
+        transform={[{ translateY: translateY }]}
+        top={200}
+      >
+        {isActive && <ColorPicker />}
+      </Box>
     );
   };
 
@@ -37,13 +58,16 @@ const DayViewScrollView = ({
       snapToOffsets={[0, viewPort.height - navigationHeight]}
       decelerationRate="fast"
       showsVerticalScrollIndicator={false}
+      bounces={false}
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollViewY } } }],
         { useNativeDriver: true }
       )}
       // scrollEnabled={false}
-      // onViewableItemsChanged={this.handleViewableItemsChanged}
-      // viewabilityConfig={this.viewabilityConfig}
+      // onViewableItemsChanged={onViewableItemsChanged}
+      // viewabilityConfig={{
+      //   itemVisiblePercentThreshold: 100
+      // }}
     />
   );
 };

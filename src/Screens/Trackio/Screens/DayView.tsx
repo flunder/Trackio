@@ -8,6 +8,12 @@ import { DayViewScrollView } from "../Components/DayViewScrollView";
 
 const DayView = (): JSX.Element => {
   const scrollViewY = useRef(new Animated.Value(0)).current;
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
+    console.log(viewableItems);
+    if (viewableItems?.[0]) setActiveIndex(viewableItems[0].index);
+  }).current;
 
   const renderItem = ({ item, index }) => {
     return (
@@ -17,7 +23,11 @@ const DayView = (): JSX.Element => {
         alignItems="center"
         justifyContent="center"
       >
-        <DayViewScrollView item={item} scrollViewY={scrollViewY} />
+        <DayViewScrollView
+          item={item}
+          scrollViewY={scrollViewY}
+          isActive={index === activeIndex}
+        />
       </Box>
     );
   };
@@ -35,7 +45,7 @@ const DayView = (): JSX.Element => {
         pointerEvents="none"
       >
         <Text fontSize={20} marginRight={Sizes[1]}>
-          January
+          January {activeIndex}
         </Text>
         <Text fontSize={20}>2023</Text>
       </Box>
@@ -47,9 +57,10 @@ const DayView = (): JSX.Element => {
         snapToInterval={viewPort.width}
         decelerationRate="fast"
         showsHorizontalScrollIndicator={false}
+        // bounces={false}
         // scrollEnabled={false}
-        // onViewableItemsChanged={this.handleViewableItemsChanged}
-        // viewabilityConfig={this.viewabilityConfig}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 75 }}
       />
     </Box>
   );

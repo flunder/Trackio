@@ -10,8 +10,10 @@ interface Props {
   setSelectedPage: Dispatch<SetStateAction<Screen>>;
 }
 
+const borderColor = "#f0f0f0";
+
 const Navigation = ({ selectedPage, setSelectedPage }: Props): JSX.Element => {
-  const navigationItems = useRef([
+  const navigationItems = [
     {
       id: 1,
       icon: <CalendarWeek opacity={selectedPage === "month" ? 1 : 0.3} />,
@@ -27,13 +29,15 @@ const Navigation = ({ selectedPage, setSelectedPage }: Props): JSX.Element => {
         setSelectedPage("day");
       }
     }
-  ]).current;
+  ];
 
   return (
     <Box
       flexDirection="row"
       height={navigationHeight}
       backgroundColor={Colors.white}
+      borderTopWidth={1}
+      borderColor={borderColor}
     >
       {navigationItems.map(({ id, onPress, icon, extraStyles }) => (
         <Touchable
