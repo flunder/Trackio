@@ -5,6 +5,10 @@ import { Colors, Fonts, Grid, Sizes } from "@app/theme";
 import { viewPort } from "@app/Utils";
 import { navigationHeight } from "../const";
 import { ColorPicker } from "./";
+import { write, read, erase } from "@app/Utils/localStorage";
+import { ASYNC_STORAGE_KEYS } from "../const";
+
+const { COLOR_DATA_KEY } = ASYNC_STORAGE_KEYS;
 
 interface Props {
   item: string | number;
@@ -17,6 +21,28 @@ const DayViewScrollView = ({
   scrollViewY,
   isActive
 }: Props): JSX.Element => {
+  const colors = useRef<string[]>(["#fff", "#fff", "#fff"]);
+
+  const onChange = async (index, color) => {
+    const updatedColors = [...colors.current];
+    updatedColors[index] = color;
+    colors.current = updatedColors;
+
+    // READ FROM LOCAL
+    const dayData = await read(COLOR_DATA_KEY);
+
+    // MERGE
+    const date = `2023-01-${dayItem}`; // YYYY-MM-DD
+    dayData[date] = colors.current;
+
+    // WRITE
+    await write(COLOR_DATA_KEY, dayData);
+
+    // READ FOR DEBUG
+    const myNewData = await read(COLOR_DATA_KEY);
+    console.log(myNewData);
+  };
+
   const translateY = useRef(
     scrollViewY.interpolate({
       inputRange: [0, 220],
@@ -45,7 +71,7 @@ const DayViewScrollView = ({
         transform={[{ translateY: translateY }]}
         top={200}
       >
-        {isActive && <ColorPicker />}
+        {isActive && <ColorPicker onChange={onChange} />}
       </Box>
     );
   };

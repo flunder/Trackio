@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Animated, FlatList, ViewStyle } from "react-native";
-import { Box, Text, Touchable } from "@app/Components";
-import { Colors, Grid, Sizes } from "@app/theme";
+import React, { useRef } from "react";
+import { Animated, ViewStyle } from "react-native";
+import { Box, Touchable } from "@app/Components";
 import { pickViewStyleProps } from "@app/Utils/pickStyleProps";
 import Svg, {
   Path,
@@ -13,7 +12,7 @@ import Svg, {
   Stop,
   Mask
 } from "react-native-svg";
-import { randomNumberBetween } from "@app/Utils";
+import { Bubbles } from "./";
 
 const amounts = {
   full: 0,
@@ -25,12 +24,16 @@ interface Props extends ViewStyle {
   scale?: number;
   color: string;
   topColor: string;
+  onChange: (index: number, color: string) => void;
+  index: number;
 }
 
 const Potion = ({
   scale = 1,
   color,
   topColor,
+  onChange,
+  index,
   ...props
 }: Props): JSX.Element => {
   const style = pickViewStyleProps(props);
@@ -38,6 +41,7 @@ const Potion = ({
   const fillAmount = useRef(new Animated.Value(amounts.empty)).current;
 
   const animateTo = (amount: number) => {
+    onChange(index, "red");
     Animated.timing(fillAmount, {
       toValue: amount,
       duration: 500,
@@ -215,122 +219,24 @@ const Potion = ({
         </Defs>
       </Svg>
 
-      <Box position="absolute" height="100%" opacity={0.5}>
+      <Box position="absolute" height="100%">
         <Touchable
           flex={1}
           onPress={() => animateTo(amounts.full)}
           width={44}
           paddingTop={20}
-        ></Touchable>
+        />
         <Touchable
           flex={1}
           onPress={() => animateTo(amounts.half)}
           width={44}
-        ></Touchable>
+        />
         <Touchable
           flex={1}
           onPress={() => animateTo(amounts.empty)}
           width={44}
-        ></Touchable>
+        />
       </Box>
-    </Box>
-  );
-};
-
-const Bubble = ({
-  scale = 1,
-  offsetX,
-  offsetY,
-  speed,
-  delay,
-  ...props
-}): JSX.Element => {
-  useEffect(() => {
-    startBubbling();
-  }, []);
-
-  const startBubbling = () => {
-    Animated.timing(offsetY, {
-      delay: delay,
-      toValue: -10,
-      duration: speed * 5000,
-      useNativeDriver: true
-    }).start(() => {
-      offsetY.setValue(160);
-      startBubbling();
-    });
-  };
-
-  return (
-    <Box
-      position="absolute"
-      transform={[{ translateX: offsetX }, { translateY: offsetY }]}
-      as={Animated.View}
-    >
-      <Svg
-        width={8 * scale}
-        height={8 * scale}
-        viewBox="0 0 8 8"
-        fill="none"
-        {...props}
-      >
-        <G opacity={0.4}>
-          <Circle
-            cx={4}
-            cy={4}
-            r={3.5}
-            fill="#fff"
-            fillOpacity={0.4}
-            stroke="#fff"
-          />
-          <Circle
-            opacity={0.3}
-            cx={4.19888}
-            cy={3.30997}
-            r={2.42105}
-            fill="#FF5325"
-          />
-        </G>
-      </Svg>
-    </Box>
-  );
-};
-
-const Bubbles = ({ fillAmount }) => {
-  const height = fillAmount.interpolate({
-    inputRange: [0, 220],
-    outputRange: [100, 20]
-  });
-
-  const refs = [...Array(10)].map(
-    (_, i) =>
-      useRef({
-        id: i,
-        scale: randomNumberBetween(0, 20) / 20,
-        speed: Math.random() + 1,
-        offsetX: Math.random() * 25 + 5,
-        offsetY: new Animated.Value(160),
-        delay: Math.random() * 5000
-      }).current
-  );
-
-  return (
-    <Box
-      bottom={3}
-      left={2}
-      width={40}
-      height={height}
-      position="absolute"
-      borderTopLeftRadius={5}
-      borderTopRightRadius={5}
-      borderBottomLeftRadius={100}
-      borderBottomRightRadius={100}
-      overflow="hidden"
-      as={Animated.View}
-    >
-      {refs.map((b) => (
-        <Bubble key={b.id} {...b} />
-      ))}
     </Box>
   );
 };
