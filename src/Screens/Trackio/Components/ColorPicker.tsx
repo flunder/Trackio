@@ -31,6 +31,7 @@ const ColorPicker = ({ onChange, potions, ...props }: Props): JSX.Element => {
       >
         {potions.map((pot, i) => (
           <Potion
+            key={i}
             scale={0.4}
             marginRight={Sizes[2]}
             color={pot.main}

@@ -4,7 +4,7 @@ import { Box, Text } from "@app/Components";
 import { Colors, Fonts, Grid, Sizes } from "@app/theme";
 import { viewPort } from "@app/Utils";
 import { navigationHeight } from "../const";
-import { ColorPicker } from "./";
+import { ColorPicker, ColorPickerSimpler } from "./";
 import { write, read, erase } from "@app/Utils/localStorage";
 import { ASYNC_STORAGE_KEYS } from "../const";
 import {
@@ -34,15 +34,14 @@ interface Props {
   item: string | number;
   scrollViewY: Animated.Value;
   isActive: boolean;
+  setColor: any;
 }
 
 const DayViewScrollView = ({
   item: dayItem,
   scrollViewY,
   isActive,
-  currentColor,
-  nextColor,
-  setTriggerRender
+  setColor
 }: Props): JSX.Element => {
   const amounts = useRef<string[]>(["empty", "empty", "empty"]);
 
@@ -53,9 +52,7 @@ const DayViewScrollView = ({
   };
 
   const onChange = async (index, color, amount) => {
-    console.log(index, color, amount);
     setAmount(index, amount);
-
     const colors = potions.map((p, i) => {
       return p.main
         .match(/\((.*)\)/)[1] // all inside ()
@@ -65,19 +62,32 @@ const DayViewScrollView = ({
           return parseInt(rgbValue) * divisor;
         });
     });
-
     const x = mixRgbColorsSubtractivelyRaw(colors);
-
     const y = `rgb(${x.join(",")})`;
-    console.log("y", y);
 
-    nextColor.current = `rgb(${x.join(",")})`;
-    // currentColor.current = `rgb(${colors[0].join(",")})`;
-    // setTriggerRender(Math.random());
+    setColor(y);
 
-    console.log("x", x);
-    // mixRgbColorsSubtractively()
-
+    // V2 ======
+    // console.log(index, color, amount);
+    // setAmount(index, amount);
+    // const colors = potions.map((p, i) => {
+    //   return p.main
+    //     .match(/\((.*)\)/)[1] // all inside ()
+    //     .split(",")
+    //     .map((rgbValue) => {
+    //       const divisor = { full: 3, half: 2.5, empty: 0 }[amounts.current[i]];
+    //       return parseInt(rgbValue) * divisor;
+    //     });
+    // });
+    // const x = mixRgbColorsSubtractivelyRaw(colors);
+    // const y = `rgb(${x.join(",")})`;
+    // console.log("y", y);
+    // nextColor.current = `rgb(${x.join(",")})`;
+    // // currentColor.current = `rgb(${colors[0].join(",")})`;
+    // // setTriggerRender(Math.random());
+    // console.log("x", x);
+    // // mixRgbColorsSubtractively()
+    // V1 ======
     /*
     const updatedColors = [...colors.current];
     updatedColors[index] = color;
@@ -129,8 +139,10 @@ const DayViewScrollView = ({
         as={Animated.View}
         transform={[{ translateY: translateY }]}
         top={200}
+        width={300}
       >
-        {isActive && <ColorPicker onChange={onChange} potions={potions} />}
+        {/* {isActive && <ColorPicker onChange={onChange} potions={potions} />} */}
+        {isActive && <ColorPickerSimpler setColor={setColor} />}
       </Box>
     );
   };

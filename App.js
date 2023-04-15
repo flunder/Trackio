@@ -48,8 +48,8 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ColorSwitch />
-      {/* <Trackio /> */}
+      {/* <ColorSwitch /> */}
+      <Trackio />
     </QueryClientProvider>
   )
 }
