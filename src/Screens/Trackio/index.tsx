@@ -7,7 +7,7 @@ import { Navigation } from "./Components/Navigation";
 import { Screen } from "./types";
 
 const Trackio = (): JSX.Element => {
-  const [selectedPage, setSelectedPage] = useState<Screen>("month");
+  const [selectedPage, setSelectedPage] = useState<Screen>("day");
 
   return (
     <Box flex={1} backgroundColor={Colors.gray100}>

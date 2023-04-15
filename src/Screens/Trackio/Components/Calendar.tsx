@@ -6,7 +6,7 @@ import { Box } from "@app/Components";
 import { Cell } from "./Cell";
 import { monthHeight } from "../const";
 import { useDaysByColors } from "../queries";
-import { mergeColors } from "../Utils/";
+import { mixColors } from "../Utils/";
 
 const padInt = (num, count) => {
   return [Math.pow(10, count - num.toString().length), num].join("").substr(1);
@@ -49,7 +49,7 @@ const Calendar = ({ month, year, calendar }): JSX.Element => {
               : "isAfter";
             const key = [year, padInt(month + 1, 2), day].join("-");
             const colors = data?.[key];
-            const color = mergeColors(colors);
+            const color = mixColors(colors);
 
             return (
               <Box key={day} flexDirection="column">

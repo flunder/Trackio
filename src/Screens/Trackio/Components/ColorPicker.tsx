@@ -6,10 +6,14 @@ import { navigationHeight } from "../const";
 import { Potion } from "./Potion";
 
 interface Props {
-  onChange: (index: number, color: "string") => void;
+  onChange: (
+    index: number,
+    color: "string",
+    amount: "full" | "half" | "empty"
+  ) => void;
 }
 
-const ColorPicker = ({ onChange, ...props }: Props): JSX.Element => {
+const ColorPicker = ({ onChange, potions, ...props }: Props): JSX.Element => {
   return (
     <Box
       height={200}
@@ -21,36 +25,20 @@ const ColorPicker = ({ onChange, ...props }: Props): JSX.Element => {
         width="100%"
         flex={1}
         backgroundColor={`${Colors.white}AA`}
-        borderRadius={Corners.regular}
-        padding={Sizes[6]}
         flexDirection="row"
         alignItems="center"
         justifyContent="center"
       >
-        <Potion
-          scale={0.4}
-          marginRight={Sizes[2]}
-          color="#FF5325"
-          topColor="#FFA188"
-          onChange={onChange}
-          index={0}
-        />
-        <Potion
-          scale={0.4}
-          marginRight={Sizes[2]}
-          color="#8E5137"
-          topColor="#B58B78"
-          onChange={onChange}
-          index={1}
-        />
-        <Potion
-          scale={0.4}
-          marginRight={Sizes[2]}
-          color="green"
-          topColor="cyan"
-          onChange={onChange}
-          index={2}
-        />
+        {potions.map((pot, i) => (
+          <Potion
+            scale={0.4}
+            marginRight={Sizes[2]}
+            color={pot.main}
+            topColor={pot.top}
+            onChange={onChange}
+            index={i}
+          />
+        ))}
       </Box>
     </Box>
   );

@@ -1,1 +1,1 @@
-export * from "./mergeColors";
+export * from "./colors";

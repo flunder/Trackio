@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
 import { DragDrop } from '@app/Screens/DragDrop';
 import { PlaySound } from '@app/Screens/PlaySound';
 import { Trackio } from '@app/Screens/Trackio';
+import { ColorSwitch } from '@app/Screens/ColorSwitch/ColorSwitch-animated';
 
 const queryClient = new QueryClient()
 
@@ -47,7 +48,8 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Trackio />
+      <ColorSwitch />
+      {/* <Trackio /> */}
     </QueryClientProvider>
   )
 }

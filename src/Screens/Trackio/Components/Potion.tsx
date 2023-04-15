@@ -13,6 +13,7 @@ import Svg, {
   Mask
 } from "react-native-svg";
 import { Bubbles } from "./";
+import { rgbToHex } from "../Utils/colors";
 
 const amounts = {
   full: 0,
@@ -40,13 +41,13 @@ const Potion = ({
   const AnimatedFill = Animated.createAnimatedComponent(G);
   const fillAmount = useRef(new Animated.Value(amounts.empty)).current;
 
-  const animateTo = (amount: number) => {
-    onChange(index, color);
+  const animateTo = (amount: "full" | "half" | "empty") => {
     Animated.timing(fillAmount, {
-      toValue: amount,
-      duration: 500,
+      toValue: { full: 0, half: 120, empty: 220 }[amount],
+      duration: 300,
       useNativeDriver: false
     }).start();
+    onChange(index, color, amount);
   };
 
   return (
@@ -222,20 +223,12 @@ const Potion = ({
       <Box position="absolute" height="100%">
         <Touchable
           flex={1}
-          onPress={() => animateTo(amounts.full)}
+          onPress={() => animateTo("full")}
           width={44}
           paddingTop={20}
         />
-        <Touchable
-          flex={1}
-          onPress={() => animateTo(amounts.half)}
-          width={44}
-        />
-        <Touchable
-          flex={1}
-          onPress={() => animateTo(amounts.empty)}
-          width={44}
-        />
+        <Touchable flex={1} onPress={() => animateTo("half")} width={44} />
+        <Touchable flex={1} onPress={() => animateTo("empty")} width={44} />
       </Box>
     </Box>
   );

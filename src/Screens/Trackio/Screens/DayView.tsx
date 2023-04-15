@@ -12,12 +12,17 @@ const DayView = (): JSX.Element => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const backgroundColorRaw = useRef(new Animated.Value(0)).current;
+  const [triggerRender, setTriggerRender] = useState(1);
+  const currentColor = useRef("red");
+  const nextColor = useRef("green");
   const backgroundColor = useRef(
     backgroundColorRaw.interpolate({
       inputRange: [0, 1],
-      outputRange: ["green", "red"]
+      outputRange: [currentColor.current, nextColor.current]
     })
-  ).current;
+  );
+
+  console.log("currentColor", currentColor.current);
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems?.[0]) setActiveIndex(viewableItems[0].index);
@@ -26,6 +31,23 @@ const DayView = (): JSX.Element => {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    backgroundColorRaw.setValue(0);
+
+    // backgroundColor.current = backgroundColorRaw.interpolate({
+    //   inputRange: [0, 1],
+    //   outputRange: [currentColor.current, nextColor.current]
+    // });
+
+    Animated.timing(backgroundColorRaw, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: false
+    }).start(() => {
+      currentColor.current = nextColor.current;
+    });
+  }, [currentColor.current, nextColor.current]);
 
   const loadData = async () => {};
 
@@ -41,13 +63,23 @@ const DayView = (): JSX.Element => {
           item={item}
           scrollViewY={scrollViewY}
           isActive={index === activeIndex}
+          currentColor={currentColor}
+          nextColor={nextColor}
+          setTriggerRender={setTriggerRender}
         />
       </Box>
     );
   };
 
   return (
-    <Box flex={1} as={Animated.View} backgroundColor={backgroundColor}>
+    <Box
+      flex={1}
+      as={Animated.View}
+      backgroundColor={backgroundColorRaw.interpolate({
+        inputRange: [0, 1],
+        outputRange: [currentColor.current, nextColor.current]
+      })}
+    >
       <Box
         flexDirection="row"
         top={525}
