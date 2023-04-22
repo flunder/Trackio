@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
 import { DragDrop } from '@app/Screens/DragDrop';
 import { PlaySound } from '@app/Screens/PlaySound';
 import { Trackio } from '@app/Screens/Trackio';
+import { EndlessFlatlist } from '@app/Screens/EndlessFlatlist';
 import { ColorSwitch } from '@app/Screens/ColorSwitch/ColorSwitch-animated';
 
 const queryClient = new QueryClient()
@@ -50,6 +51,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       {/* <ColorSwitch /> */}
       <Trackio />
+      {/* <EndlessFlatlist /> */}
     </QueryClientProvider>
   )
 }

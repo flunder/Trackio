@@ -51,44 +51,44 @@ const DayViewScrollView = ({
     amounts.current = updatedAmounts;
   };
 
-  const onChange = async (index, color, amount) => {
-    setAmount(index, amount);
-    const colors = potions.map((p, i) => {
-      return p.main
-        .match(/\((.*)\)/)[1] // all inside ()
-        .split(",")
-        .map((rgbValue) => {
-          const divisor = { full: 3, half: 2.5, empty: 0 }[amounts.current[i]];
-          return parseInt(rgbValue) * divisor;
-        });
-    });
-    const x = mixRgbColorsSubtractivelyRaw(colors);
-    const y = `rgb(${x.join(",")})`;
+  // const onChange = async (index, color, amount) => {
+  // setAmount(index, amount);
+  // const colors = potions.map((p, i) => {
+  //   return p.main
+  //     .match(/\((.*)\)/)[1] // all inside ()
+  //     .split(",")
+  //     .map((rgbValue) => {
+  //       const divisor = { full: 3, half: 2.5, empty: 0 }[amounts.current[i]];
+  //       return parseInt(rgbValue) * divisor;
+  //     });
+  // });
+  // const x = mixRgbColorsSubtractivelyRaw(colors);
+  // const y = `rgb(${x.join(",")})`;
 
-    setColor(y);
+  // setColor(y);
 
-    // V2 ======
-    // console.log(index, color, amount);
-    // setAmount(index, amount);
-    // const colors = potions.map((p, i) => {
-    //   return p.main
-    //     .match(/\((.*)\)/)[1] // all inside ()
-    //     .split(",")
-    //     .map((rgbValue) => {
-    //       const divisor = { full: 3, half: 2.5, empty: 0 }[amounts.current[i]];
-    //       return parseInt(rgbValue) * divisor;
-    //     });
-    // });
-    // const x = mixRgbColorsSubtractivelyRaw(colors);
-    // const y = `rgb(${x.join(",")})`;
-    // console.log("y", y);
-    // nextColor.current = `rgb(${x.join(",")})`;
-    // // currentColor.current = `rgb(${colors[0].join(",")})`;
-    // // setTriggerRender(Math.random());
-    // console.log("x", x);
-    // // mixRgbColorsSubtractively()
-    // V1 ======
-    /*
+  // V2 ======
+  // console.log(index, color, amount);
+  // setAmount(index, amount);
+  // const colors = potions.map((p, i) => {
+  //   return p.main
+  //     .match(/\((.*)\)/)[1] // all inside ()
+  //     .split(",")
+  //     .map((rgbValue) => {
+  //       const divisor = { full: 3, half: 2.5, empty: 0 }[amounts.current[i]];
+  //       return parseInt(rgbValue) * divisor;
+  //     });
+  // });
+  // const x = mixRgbColorsSubtractivelyRaw(colors);
+  // const y = `rgb(${x.join(",")})`;
+  // console.log("y", y);
+  // nextColor.current = `rgb(${x.join(",")})`;
+  // // currentColor.current = `rgb(${colors[0].join(",")})`;
+  // // setTriggerRender(Math.random());
+  // console.log("x", x);
+  // // mixRgbColorsSubtractively()
+  // V1 ======
+  /*
     const updatedColors = [...colors.current];
     updatedColors[index] = color;
     colors.current = updatedColors;
@@ -110,7 +110,7 @@ const DayViewScrollView = ({
     const myNewData = await read(COLOR_DATA_KEY);
     console.log(myNewData);
     */
-  };
+  // };
 
   const translateY = useRef(
     scrollViewY.interpolate({
@@ -130,7 +130,7 @@ const DayViewScrollView = ({
       <Box height={viewPort.height - navigationHeight}>
         <Box flex={1} alignItems="center" justifyContent="center">
           <Text fontSize={280} fontFamily={Fonts.Bold} letterSpacing={-10}>
-            {dayItem}
+            {dayItem.format("DD")}
           </Text>
         </Box>
       </Box>

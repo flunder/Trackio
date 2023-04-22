@@ -7,11 +7,18 @@ import { DayViewScrollView } from "../Components/DayViewScrollView";
 import { write, read, erase } from "@app/Utils/localStorage";
 import { ASYNC_STORAGE_KEYS } from "../const";
 import { useAnimatedColor } from "../Hooks/useAnimatedColor";
+import { useDaySwipeData } from "../Hooks/useDaySwipeData";
+
+const { width, height } = viewPort;
 
 const DayView = (): JSX.Element => {
+  const daysToShow = 14;
   const scrollViewY = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
   const { color, setColor, animatedColor } = useAnimatedColor();
+  const { data: daysData } = useDaySwipeData(daysToShow);
+
+  const days = ["red", "green", "blue"];
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems?.[0]) setActiveIndex(viewableItems[0].index);
@@ -20,6 +27,11 @@ const DayView = (): JSX.Element => {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    // alert(activeIndex);
+    // setColor(days[activeIndex]);
+  }, [activeIndex]);
 
   const loadData = async () => {};
 
@@ -41,6 +53,8 @@ const DayView = (): JSX.Element => {
     );
   };
 
+  if (!daysData || daysData.length === 0) return null;
+
   return (
     <Box flex={1} as={Animated.View} backgroundColor={animatedColor}>
       <Box
@@ -59,7 +73,7 @@ const DayView = (): JSX.Element => {
         <Text fontSize={20}>2023</Text>
       </Box>
       <FlatList
-        data={[11, 12, 13, 14]}
+        data={daysData}
         keyExtractor={(item) => item}
         renderItem={renderItem}
         horizontal
@@ -67,7 +81,13 @@ const DayView = (): JSX.Element => {
         decelerationRate="fast"
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 75 }}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+        initialScrollIndex={daysToShow / 2}
+        getItemLayout={(data, index) => ({
+          length: height,
+          offset: width * index,
+          index
+        })}
       />
     </Box>
   );
