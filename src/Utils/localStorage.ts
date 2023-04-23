@@ -13,7 +13,7 @@ export const write = async (key: string, value: any) => {
 export const read = async (key: string) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
+    return jsonValue != null ? JSON.parse(jsonValue) : {};
   } catch (e) {
     console.log("Error reading AsyncStorage", key, e);
   }

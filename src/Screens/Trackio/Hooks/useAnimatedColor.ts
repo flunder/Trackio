@@ -20,7 +20,7 @@ export const useAnimatedColor = () => {
 
     Animated.timing(animatedColor, {
       toValue: 1,
-      duration: 500,
+      duration: 400,
       useNativeDriver: false
     }).start(() => {
       frColor.current = color;

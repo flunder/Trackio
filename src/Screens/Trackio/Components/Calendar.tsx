@@ -47,9 +47,8 @@ const Calendar = ({ month, year, calendar }): JSX.Element => {
               : isSame
               ? "isSame"
               : "isAfter";
-            const key = [year, padInt(month + 1, 2), day].join("-");
-            const colors = data?.[key];
-            const color = mixColors(colors);
+            const key = [day, padInt(month + 1, 2), year].join("/");
+            const color = data?.[key];
 
             return (
               <Box key={day} flexDirection="column">

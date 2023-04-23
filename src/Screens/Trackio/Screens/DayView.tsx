@@ -16,24 +16,38 @@ const DayView = (): JSX.Element => {
   const scrollViewY = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
   const { color, setColor, animatedColor } = useAnimatedColor();
-  const { data: daysData } = useDaySwipeData(daysToShow);
+  const { data: daysData, setData, isReady } = useDaySwipeData(daysToShow);
 
-  const days = ["red", "green", "blue"];
-
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    if (viewableItems?.[0]) setActiveIndex(viewableItems[0].index);
+  const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
+    // Quicker bi-directional onViewableItemsChanged
+    if (viewableItems?.length >= 2 && changed?.[0]?.isViewable) {
+      setActiveIndex(changed?.[0].index);
+    } else {
+      if (viewableItems?.[0]) setActiveIndex(viewableItems[0].index);
+    }
   }).current;
 
   useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    // alert(activeIndex);
-    // setColor(days[activeIndex]);
+    if (!isReady) return;
+    setColor(daysData[activeIndex].color);
   }, [activeIndex]);
 
-  const loadData = async () => {};
+  useEffect(() => {
+    if (!isReady) return;
+    updateData();
+  }, [color]);
+
+  const updateData = async () => {
+    // Apply locally
+    const newData = [...daysData];
+    newData[activeIndex] = { ...newData[activeIndex], color: color };
+    setData(newData);
+    // Save to storage
+    const data = await read(ASYNC_STORAGE_KEYS.COLOR_DATA_KEY);
+    const currentDate = newData[activeIndex].date;
+    data[currentDate] = color;
+    await write(ASYNC_STORAGE_KEYS.COLOR_DATA_KEY, data);
+  };
 
   const renderItem = ({ item, index }) => {
     return (
@@ -55,6 +69,8 @@ const DayView = (): JSX.Element => {
 
   if (!daysData || daysData.length === 0) return null;
 
+  // console.log("daysData", daysData);
+
   return (
     <Box flex={1} as={Animated.View} backgroundColor={animatedColor}>
       <Box
@@ -68,13 +84,13 @@ const DayView = (): JSX.Element => {
         pointerEvents="none"
       >
         <Text fontSize={20} marginRight={Sizes[1]}>
-          January {activeIndex}
+          January
         </Text>
         <Text fontSize={20}>2023</Text>
       </Box>
       <FlatList
         data={daysData}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
         horizontal
         snapToInterval={viewPort.width}
@@ -84,7 +100,7 @@ const DayView = (): JSX.Element => {
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         initialScrollIndex={daysToShow / 2}
         getItemLayout={(data, index) => ({
-          length: height,
+          length: width,
           offset: width * index,
           index
         })}

@@ -12,13 +12,7 @@ export const ColorPickerSimpler = ({
   color: string;
   setColor: Dispatch<SetStateAction<string>>;
 }) => (
-  <Box
-    // position="absolute"
-    // bottom={100}
-    paddingHorizontal={Grid.gutter_width}
-    width="100%"
-    height={220}
-  >
+  <Box paddingHorizontal={Grid.gutter_width} width="100%" height={220}>
     <Box
       backgroundColor={Colors.white}
       width="100%"
@@ -28,23 +22,13 @@ export const ColorPickerSimpler = ({
     >
       <Box flexDirection="row" borderRadius={Corners.regular} overflow="hidden">
         {ColorOptions.map((c) => (
-          <Box flex={1}>
+          <Box flex={1} key={c}>
             <Touchable
-              key={c}
               activeOpacity={1}
               height={20}
               backgroundColor={c}
               alignItems="center"
-              onPress={() => {
-                // LayoutAnimation.configureNext({
-                //   duration: 500,
-                //   create: { type: "linear", property: "scaleXY" },
-                //   update: { type: "linear", property: "scaleXY" },
-                //   delete: { type: "linear", property: "scaleXY" }
-                // });
-
-                setColor(c);
-              }}
+              onPress={() => setColor(c)}
             >
               {c === color && (
                 <Box
