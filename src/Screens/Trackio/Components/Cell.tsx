@@ -60,7 +60,7 @@ const Cell = ({
           height="80%"
           borderRadius={9999}
           backgroundColor={dayColor}
-          borderWidth={1}
+          // borderWidth={1}
         />
       )}
       {isSelected && (

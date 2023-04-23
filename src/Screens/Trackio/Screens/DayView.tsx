@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Animated, FlatList } from "react-native";
+import { useQueryClient } from "react-query";
+
 import { Box, Text } from "@app/Components";
 import { Sizes } from "@app/theme";
 import { viewPort } from "@app/Utils";
@@ -11,15 +13,16 @@ import { useDaySwipeData } from "../Hooks/useDaySwipeData";
 
 const { width, height } = viewPort;
 
-const DayView = (): JSX.Element => {
+const DayView = React.memo((): JSX.Element => {
   const daysToShow = 14;
+  const queryClient = useQueryClient();
   const scrollViewY = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
   const { color, setColor, animatedColor } = useAnimatedColor();
   const { data: daysData, setData, isReady } = useDaySwipeData(daysToShow);
 
+  // Quicker bi-directional onViewableItemsChanged ( than the usual )
   const onViewableItemsChanged = useRef(({ viewableItems, changed }) => {
-    // Quicker bi-directional onViewableItemsChanged
     if (viewableItems?.length >= 2 && changed?.[0]?.isViewable) {
       setActiveIndex(changed?.[0].index);
     } else {
@@ -28,13 +31,11 @@ const DayView = (): JSX.Element => {
   }).current;
 
   useEffect(() => {
-    if (!isReady) return;
-    setColor(daysData[activeIndex].color);
+    if (isReady) setColor(daysData[activeIndex].color);
   }, [activeIndex]);
 
   useEffect(() => {
-    if (!isReady) return;
-    updateData();
+    if (isReady) updateData();
   }, [color]);
 
   const updateData = async () => {
@@ -42,11 +43,24 @@ const DayView = (): JSX.Element => {
     const newData = [...daysData];
     newData[activeIndex] = { ...newData[activeIndex], color: color };
     setData(newData);
+
     // Save to storage
     const data = await read(ASYNC_STORAGE_KEYS.COLOR_DATA_KEY);
     const currentDate = newData[activeIndex].date;
     data[currentDate] = color;
+    // Add lastChange
+    const splitDate = currentDate.split("/");
+    data["lastChange"] = {
+      day: Number(splitDate[0]),
+      month: Number(splitDate[1]),
+      year: Number(splitDate[2])
+    };
     await write(ASYNC_STORAGE_KEYS.COLOR_DATA_KEY, data);
+
+    // Update UI
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["colors"] });
+    }, 500);
   };
 
   const renderItem = ({ item, index }) => {
@@ -107,6 +121,6 @@ const DayView = (): JSX.Element => {
       />
     </Box>
   );
-};
+});
 
 export { DayView };

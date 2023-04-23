@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Animated, ActivityIndicator } from "react-native";
 
 import { viewPort } from "@app/Utils";
@@ -9,9 +9,13 @@ import { Cell } from "../Components/Cell";
 import { Calendar } from "../Components/Calendar";
 import { useMonthsToShow } from "../Hooks/useMonthsToShow";
 import { titleHeight, monthHeight, months, weekdays } from "../const";
+import { useDaysByColors } from "../queries";
 
-const MonthView = (): JSX.Element => {
+const MonthView = React.memo((): JSX.Element => {
   const offsetY = useRef(new Animated.Value(0)).current;
+  const { data, isLoading: x } = useDaysByColors();
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
   const monthOffsetY = useRef(
     offsetY.interpolate({
       inputRange: [0, monthHeight],
@@ -21,6 +25,15 @@ const MonthView = (): JSX.Element => {
   ).current;
 
   const { monthsData, isLoading } = useMonthsToShow();
+
+  console.log("monthsData", monthsData);
+
+  useEffect(() => {
+    // if (!isLoading) setIsFirstRender(false);
+    setTimeout(() => {
+      setIsFirstRender(false);
+    }, 1000);
+  }, [isLoading]);
 
   const Weekdays = () => (
     <Box flexDirection="row" alignSelf="center">
@@ -58,7 +71,13 @@ const MonthView = (): JSX.Element => {
   };
 
   const renderItem = ({ item: { month, year, calendar } }) => (
-    <Calendar month={month - 1} year={year} calendar={calendar} />
+    <Calendar
+      month={month - 1}
+      year={year}
+      calendar={calendar}
+      data={data}
+      isFirstRender={isFirstRender}
+    />
   );
 
   return (
@@ -98,6 +117,6 @@ const MonthView = (): JSX.Element => {
       </Box>
     </Box>
   );
-};
+});
 
 export { MonthView };
